@@ -1,26 +1,24 @@
-from fastapi.responses import JSONResponse
-
 from fastapi import FastAPI
 from fastapi import File, UploadFile, Form
 
 from yolo_utils import process_detection_request
+from config import BarcodeOutput, Status
 
 app = FastAPI()
 
 
-@app.get("/status")
+@app.get("/status", response_model=Status)
 async def check_status():
     """ Check the status of the server.
     Returns:
         str: A message indicating if the server is running.
     """
-    return JSONResponse({'status': 'ok'})
+    return Status(status='ok')    
 
 
-@app.post("/detection/")
+@app.post("/detection/", response_model=list(BarcodeOutput))
 async def upload(token: str = Form(...),
-                 file: UploadFile = File(...),
-                 ):
+                 file: UploadFile = File(...)):
     """ Upload an image and detect cars in it.
 
     Args:

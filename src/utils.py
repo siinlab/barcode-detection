@@ -3,7 +3,6 @@ from enum import Enum
 from os.path import dirname, join
 
 from PIL import Image
-from fastapi import UploadFile
 from lgg import logger
 
 import requests
