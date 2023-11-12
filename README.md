@@ -1,6 +1,3 @@
-> Make sure to change the port `9000` name in the `scripts/port.txt` file.
-> Make sure to change the value of `IMAGE_NAME` .
-
 # [repository name]
 [repository description]
 
