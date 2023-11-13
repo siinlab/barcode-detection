@@ -9,10 +9,11 @@ from lgg import logger
 from ultralytics import YOLO
 
 from config import BARCODE_PATH, BARCODE_DECODER_PATH
-from utils import is_valid_token, save_uploaded_image
+from utils import save_uploaded_image
+from engine_utils import validate_api_key
 
 def validate_token(token: str):
-    if not is_valid_token(token):
+    if not validate_api_key(token):
         logger.error(f"Token `{token}` is invalid")
         raise HTTPException(status_code=498, detail="Invalid token")
 
