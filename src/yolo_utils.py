@@ -9,7 +9,7 @@ from lgg import logger
 from ultralytics import YOLO
 import cv2
 
-from config import BARCODE_PATH, BARCODE_DECODER_PATH
+from config import BARCODE_PATH, BARCODE_DECODER_PATH, BarcodeOutput
 from utils import save_uploaded_image
 from engine_utils import validate_api_key
 
