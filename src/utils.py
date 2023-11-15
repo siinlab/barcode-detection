@@ -4,9 +4,9 @@ from os.path import dirname, join
 
 from PIL import Image
 from lgg import logger
-
+import cv2
 import requests
-
+import numpy as np
 from config import API_KEY_URL
 
 UPLOAD_FOLDER = join(dirname(__file__), "uploads")
@@ -36,13 +36,21 @@ def save_uploaded_image(file) -> str:
         str: The path to the saved file.
     """
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
+    
+    
     path = join(UPLOAD_FOLDER, file.filename)
-    contents = file.file.read()
-    with open(path, 'wb') as f:
-        f.write(contents)
+    
+    # Read the image from the uploaded file
+    image_data = file.file.read()
+    # Convert image data to numpy array
+    nparr = np.frombuffer(image_data, np.uint8)
 
-    return path
+    # Decode the image using OpenCV
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    cv2.imwrite(path, image)
+
+    return image
 
 
 def save_result_image(img_name: str, img: Image.Image) -> str:
@@ -109,3 +117,23 @@ def json_post_request(url, **kwargs):
     url = f'{url}?{kwargs}'
     x = requests.post(url)
     return x.json()
+
+def crop_object( xyxy, image):
+        """
+        Crop the object based on its bounding box coordinates.
+
+        Args:
+            xyxy (tuple): Bounding box coordinates.
+            image (np.array): The image from which to crop.
+
+        Returns:
+            np.array: The cropped object.
+        """
+        xmin, ymin, xmax, ymax = map(int, xyxy[:4])
+        width, height = xmax - xmin, ymax - ymin
+        width_increase, height_increase = int(0.4 * width), int(0.8 * height)
+
+        xmin, ymin = max(0, xmin - width_increase // 2), max(0, ymin - height_increase // 2)
+        xmax, ymax = min(image.shape[1], xmax + width_increase // 2), min(image.shape[0], ymax + height_increase // 2)
+
+        return image[ymin:ymax, xmin:xmax]
