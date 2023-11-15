@@ -10,7 +10,7 @@ from ultralytics import YOLO
 import cv2
 
 from config import BARCODE_PATH, BARCODE_DECODER_PATH, BarcodeOutput
-from utils import save_uploaded_image
+from utils import save_uploaded_image, crop_object
 from engine_utils import validate_api_key
 
 def validate_token(token: str):
@@ -30,13 +30,9 @@ def handle_json_response(bboxes: List[np.array], label_names: List[str]) -> dict
         )
         barcode_outputs.append(barcode_output)
 
-    output_list = [
-        [barcode_output.x1, barcode_output.y1, barcode_output.x2, barcode_output.y2,
-         barcode_output.score, barcode_output.barcode] for barcode_output in barcode_outputs
-    ]
 
-    result = {"output": output_list}
-    return result
+    result = {"output": barcode_outputs}
+    return barcode_outputs
 
 def process_detection_request(token: str = Form(...), file: UploadFile = File(...)):
     """Process a detection request."""

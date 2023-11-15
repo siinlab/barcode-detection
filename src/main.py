@@ -15,17 +15,13 @@ async def check_status():
     """
     return Status(status='ok')    
 
-@app.post("/detection/")
+@app.post("/detection/", response_model=List[BarcodeOutput])
 async def upload(token: str = Form(...), file: UploadFile = File(...)):
-    """ Upload an image and detect cars in it.
-
-    Args:
-        token: A token to authenticate the user.
-        file: The image to be uploaded.
+    """ Formatted as (x1, y1, x2, y2, score, barcode string)
     """
     try:
         result = process_detection_request(token=token, file=file)
-        return JSONResponse(content=result)
+        return result
     except Exception as e:
         # Handle exceptions appropriately
         return JSONResponse(content={"error": "An error occurred during processing."}, status_code=500)
