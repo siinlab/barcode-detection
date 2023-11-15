@@ -13,16 +13,6 @@ UPLOAD_FOLDER = join(dirname(__file__), "uploads")
 RESULT_FOLDER = join(dirname(__file__), "results")
 DEBUG_FOLDER = join(dirname(__file__), "debug")
 
-
-def is_valid_token(token: str) -> bool:
-    """ Check if the token is valid.
-    Args:
-        token (str): A token to validate.
-    Returns:
-        bool: True if the token is valid, False otherwise.
-    """
-    return True
-
 def save_uploaded_image(file) -> str:
     """ Save the uploaded file inside `uploads` folder.
 

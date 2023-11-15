@@ -10,4 +10,4 @@ APP_PORT=$(cat $DIR/port.txt)
 
 # Run the app
 cd "$DIR/../src"
-uvicorn main:app --host localhost --port 7777
+uvicorn main:app --host localhost --port  $APP_PORT
