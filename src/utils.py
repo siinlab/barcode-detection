@@ -121,9 +121,44 @@ def crop_object( xyxy, image):
         """
         xmin, ymin, xmax, ymax = map(int, xyxy[:4])
         width, height = xmax - xmin, ymax - ymin
-        width_increase, height_increase = int(0.4 * width), int(0.8 * height)
+        width_increase, height_increase = int(width+10), int(height+10)
 
         xmin, ymin = max(0, xmin - width_increase // 2), max(0, ymin - height_increase // 2)
         xmax, ymax = min(image.shape[1], xmax + width_increase // 2), min(image.shape[0], ymax + height_increase // 2)
 
         return image[ymin:ymax, xmin:xmax]
+
+def determine_barcode_orientation(barcode_digits, barcode_box):
+    digit_widths = barcode_digits[0][:, 2]
+    digit_heights = barcode_digits[0][:, 3]
+    digits_cx = barcode_digits[0][:, 0]
+    digits_cy = barcode_digits[0][:, 1]
+
+    mean_width = np.mean(digit_widths)
+    mean_height = np.mean(digit_heights)
+
+    barcode_center_x, barcode_center_y, barcode_width, barcode_height, _, _ = barcode_box
+    top_left_x = barcode_center_x - barcode_width / 2
+    top_left_y = barcode_center_y - barcode_height / 2
+
+    adjusted_center_x = np.mean(digits_cx) + top_left_x
+    adjusted_center_y = np.mean(digits_cy) + top_left_y
+
+    if mean_width < mean_height:
+        # Barcode is horizontal
+        
+        sort_axis = 0  # Sort by Y axis
+        reverse_sort = adjusted_center_y  < barcode_center_y # Right-to-left if True, otherwise Left-to-right 
+    else:
+        # Barcode is vertical
+        sort_axis = 1  # Sort by X axis
+        reverse_sort = adjusted_center_x > barcode_center_x    # Bottom-to-top if True, otherwise Top-to-bottom
+
+    sorted_indices = barcode_digits[0][:, sort_axis].argsort()
+    if reverse_sort:
+        sorted_indices = sorted_indices[::-1]
+
+    sorted_bbox_array = barcode_digits[0][sorted_indices]
+    sorted_digit_values = map(int, sorted_bbox_array[:, 5])
+
+    return list(sorted_digit_values)

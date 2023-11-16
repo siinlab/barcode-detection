@@ -10,7 +10,7 @@ from ultralytics import YOLO
 import cv2
 
 from config import BARCODE_PATH, BARCODE_DECODER_PATH, BarcodeOutput
-from utils import save_uploaded_image, crop_object
+from utils import save_uploaded_image, crop_object, determine_barcode_orientation
 from engine_utils import validate_api_key
 
 def validate_token(token: str):
@@ -31,7 +31,7 @@ def handle_json_response(bboxes: List[np.array], label_names: List[str]) -> dict
         barcode_outputs.append(barcode_output)
 
 
-    result = {"output": barcode_outputs}
+    # result = {"output": barcode_outputs}
     return barcode_outputs
 
 def process_detection_request(token: str = Form(...), file: UploadFile = File(...)):
@@ -45,16 +45,15 @@ def process_detection_request(token: str = Form(...), file: UploadFile = File(..
         logger.info(f"Successfully uploaded {file.filename}")
 
         bboxes, _ = detect_barcode(input_source=image)
+       
         label_digits, barcode_bboxes = [], []
 
         for xyxy in bboxes[0]:
+            
             barcode_bboxes.append(xyxy)
             cropped_object = crop_object(xyxy, image)
             bboxe, _ = detect_barcode_digits(cropped_object)
-
-            bboxe = bboxe[0]
-            sorted_bbox_array = bboxe[bboxe[:, 0].argsort()]
-            sorted_c_values = map(int, sorted_bbox_array[:, 5])
+            sorted_c_values = determine_barcode_orientation(bboxe,xyxy)         
             label_digits.append(''.join(map(str, sorted_c_values)))
 
         return handle_json_response(barcode_bboxes, label_digits)
@@ -123,3 +122,4 @@ def predict_bbox(model_path: str, input_source: Union[str, PIL.Image.Image]) -> 
     bboxes = [result.boxes.data.cpu().numpy() for result in results]
     labels = [result.names for result in results]
     return bboxes, labels
+
