@@ -162,3 +162,43 @@ def determine_barcode_orientation(barcode_digits, barcode_box):
     sorted_digit_values = map(int, sorted_bbox_array[:, 5])
 
     return list(sorted_digit_values)
+
+
+def sort_barcode_digits(barcode_digits, barcode_box):
+    digits_cx = barcode_digits[0][:, 0]
+    digits_cy = barcode_digits[0][:, 1]
+
+
+    barcode_center_x, barcode_center_y, *_ = barcode_box
+    
+    var_x = np.var(digits_cx)
+    var_y = np.var(digits_cy)
+    
+    mean_x = np.mean(digits_cx)
+    mean_y = np.mean(digits_cy)
+    
+    if var_x > var_y:
+        # Barcode is horizontal
+        sorted_indices = barcode_digits[0][:, 0].argsort()
+
+        if mean_y < barcode_center_y:
+            # Barcode is upside down
+            sorted_indices = sorted_indices[::-1]
+        else:
+            # Barcode is right side up
+            pass # don't do anything
+        
+    else:
+        # Barcode is vertical
+        sorted_indices = barcode_digits[0][:, 1].argsort()
+        if mean_x < barcode_center_x:
+            # Barcode is upside down
+            sorted_indices = sorted_indices[::-1]
+        else:
+            # Barcode is right side up
+            pass # don't do anything
+        
+    sorted_bbox_array = barcode_digits[0][sorted_indices]
+    sorted_digit_values = map(int, sorted_bbox_array[:, 5])
+    return list(sorted_digit_values)
+    
