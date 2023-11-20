@@ -121,7 +121,7 @@ def crop_object( xyxy, image):
         """
         xmin, ymin, xmax, ymax = map(int, xyxy[:4])
         width, height = xmax - xmin, ymax - ymin
-        width_increase, height_increase = int(width+10), int(height+10)
+        width_increase, height_increase = int(width), int(height)
 
         xmin, ymin = max(0, xmin - width_increase // 2), max(0, ymin - height_increase // 2)
         xmax, ymax = min(image.shape[1], xmax + width_increase // 2), min(image.shape[0], ymax + height_increase // 2)
