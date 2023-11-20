@@ -8,7 +8,7 @@ from supervision.detection.core import Detections
 from supervision.detection.annotate import BoxAnnotator
 
 # Initialize box annotator for image processing
-box_annotator = BoxAnnotator(thickness=2, text_thickness=1, text_scale=1)
+box_annotator = BoxAnnotator(thickness=3, text_thickness=3, text_scale=2)
 
 def run_inference(image_file):
     """Run model inference on a given image."""
@@ -40,7 +40,7 @@ def process_detections(api_response, image_path):
     """Process detections from the API response."""
     img = cv2.imread(image_path)
     xyxy, confidence, detected_barcodes = zip(*[
-        ([det["x1"], det["y1"], det["x2"], det["y2"]], det["score"], int(det["barcode"]) if det["barcode"] else "")
+        ([det["x1"], det["y1"], det["x2"], det["y2"]], det["score"], int(det["barcode"]) if det["barcode"] else 0)
         for det in api_response
     ])
 
@@ -53,7 +53,7 @@ def process_detections(api_response, image_path):
     detections = Detections(xyxy=xyxy, confidence=confidence, class_id=class_id)
 
     # Generating labels
-    labels = [f"{id} {conf:0.2f}" for conf, id in zip(confidence, class_id)]
+    labels = [f"{id}  {conf:0.2f}" for conf, id in zip(confidence, class_id)]
 
     # Annotating the image
     img = box_annotator.annotate(scene=img, detections=detections, labels=labels)
@@ -61,4 +61,4 @@ def process_detections(api_response, image_path):
 
 def save_misrecognized_image(image, folder, image_name):
     """Save misrecognized images to a specified folder."""
-    cv2.imwrite(os.path.join(folder, image_name + ".jpg"), image)
+    cv2.imwrite(os.path.join(folder, image_name), image)
