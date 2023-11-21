@@ -1,5 +1,6 @@
 import os
 import cv2
+from tqdm import tqdm
 from .image_processing import run_inference, process_detections, save_misrecognized_image
 
 def read_labels(file_path):
@@ -16,7 +17,7 @@ def evaluate_model(images_folder, labels_folder, misrecognized_folder):
     """Evaluate model accuracy on a set of images and labels."""
     predictions, ground_truths = [], []
 
-    for image_name in os.listdir(images_folder):
+    for image_name in tqdm(os.listdir(images_folder)):
         image_path = os.path.join(images_folder, image_name)
         label_path = os.path.join(labels_folder, os.path.splitext(image_name)[0] + '.txt')
 
@@ -25,6 +26,7 @@ def evaluate_model(images_folder, labels_folder, misrecognized_folder):
             ground_truths.append(bool(actual_barcodes))
             api_response = run_inference(image_path)
 
+            img = cv2.imread(image_path)
             if api_response:
                 detected_barcodes, img = process_detections(api_response, image_path)
             else:
@@ -34,7 +36,5 @@ def evaluate_model(images_folder, labels_folder, misrecognized_folder):
             if not is_match:
                 save_misrecognized_image(img, misrecognized_folder, image_name)
             predictions.append(is_match)
-        print("detected_barcodes",detected_barcodes, "actual_barcodes",actual_barcodes)
-        print("ground_truths",ground_truths, "detected_barcodes",predictions)
 
     return accuracy_score(ground_truths, predictions) * 100
