@@ -42,7 +42,6 @@ def process_detection_request(token: str = Form(...), file: UploadFile = File(..
 
     try:
         image = save_uploaded_image(file)
-        logger.info(f"Successfully uploaded {file.filename}")
 
         bboxes, _ = detect_barcode(input_source=image)
        
@@ -53,7 +52,7 @@ def process_detection_request(token: str = Form(...), file: UploadFile = File(..
             barcode_bboxes.append(xyxy)
             cropped_object = crop_object(xyxy, image)
             bboxe, _ = detect_barcode_digits(cropped_object)
-            sorted_c_values = determine_barcode_orientation(bboxe,xyxy)         
+            sorted_c_values = determine_barcode_orientation(bboxe, xyxy)         
             label_digits.append(''.join(map(str, sorted_c_values)))
 
         return handle_json_response(barcode_bboxes, label_digits)
@@ -101,8 +100,6 @@ def predict(model_path: str, input_source: Union[str, PIL.Image.Image]) -> Tuple
         + (bboxes, label_names): A tuple containing the bounding boxes and the label names
     """
     bboxes, label_names = predict_bbox(model_path, input_source)
-    logger.debug(f"{bboxes=}")
-    logger.debug(f"{label_names=}")
 
     return bboxes, label_names
 

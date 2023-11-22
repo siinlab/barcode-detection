@@ -121,7 +121,7 @@ def crop_object( xyxy, image):
         """
         xmin, ymin, xmax, ymax = map(int, xyxy[:4])
         width, height = xmax - xmin, ymax - ymin
-        width_increase, height_increase = int(width), int(height)
+        width_increase, height_increase = int(width), int(height) # NOTE: this width & height increase play a major role in determining the barcode orientation
 
         xmin, ymin = max(0, xmin - width_increase // 2), max(0, ymin - height_increase // 2)
         xmax, ymax = min(image.shape[1], xmax + width_increase // 2), min(image.shape[0], ymax + height_increase // 2)
@@ -129,76 +129,66 @@ def crop_object( xyxy, image):
         return image[ymin:ymax, xmin:xmax]
 
 def determine_barcode_orientation(barcode_digits, barcode_box):
-    digit_widths = barcode_digits[0][:, 2]
-    digit_heights = barcode_digits[0][:, 3]
-    digits_cx = barcode_digits[0][:, 0]
-    digits_cy = barcode_digits[0][:, 1]
+    return sort_barcode_digits(barcode_digits, barcode_box)
 
-    mean_width = np.mean(digit_widths)
-    mean_height = np.mean(digit_heights)
+def xyxy_to_xywh(xyxy):
+    """ Convert bounding box coordinates from xyxy format to xywh format.
 
-    barcode_center_x, barcode_center_y, barcode_width, barcode_height, _, _ = barcode_box
-    top_left_x = barcode_center_x - barcode_width / 2
-    top_left_y = barcode_center_y - barcode_height / 2
+    Args:
+        xyxy (1d-array): Bounding box coordinates in xyxysc format.
 
-    adjusted_center_x = np.mean(digits_cx) + top_left_x
-    adjusted_center_y = np.mean(digits_cy) + top_left_y
-
-    if mean_width < mean_height:
-        # Barcode is horizontal
-        
-        sort_axis = 0  # Sort by Y axis
-        reverse_sort = adjusted_center_y  < barcode_center_y # Right-to-left if True, otherwise Left-to-right 
-    else:
-        # Barcode is vertical
-        sort_axis = 1  # Sort by X axis
-        reverse_sort = adjusted_center_x > barcode_center_x    # Bottom-to-top if True, otherwise Top-to-bottom
-
-    sorted_indices = barcode_digits[0][:, sort_axis].argsort()
-    if reverse_sort:
-        sorted_indices = sorted_indices[::-1]
-
-    sorted_bbox_array = barcode_digits[0][sorted_indices]
-    sorted_digit_values = map(int, sorted_bbox_array[:, 5])
-
-    return list(sorted_digit_values)
-
+    Returns:
+        1d-array: Bounding box coordinates in xywhsc format.
+    """
+    xmin, ymin, xmax, ymax = map(int, xyxy[:4])
+    width, height = xmax - xmin, ymax - ymin
+    xc, yc = xmin + width // 2, ymin + height // 2
+    return np.array([xc, yc, width, height, xyxy[4], xyxy[5]])
 
 def sort_barcode_digits(barcode_digits, barcode_box):
-    digits_cx = barcode_digits[0][:, 0]
-    digits_cy = barcode_digits[0][:, 1]
+    """ Sort the barcode digits in the correct order.
 
+    Args:
+        barcode_digits: The detected barcode digits.
+        barcode_box: The bounding box of the barcode.
 
-    barcode_center_x, barcode_center_y, *_ = barcode_box
+    Returns:
+        list: The sorted barcode digits.
+    """
+    barcode_box = xyxy_to_xywh(barcode_box)
+    barcode_digits = barcode_digits[0]
+    tmp = []
+    for b in barcode_digits:
+        tmp.append(xyxy_to_xywh(b))
+    barcode_digits = np.array(tmp).reshape(-1, 6)
     
-    var_x = np.var(digits_cx)
-    var_y = np.var(digits_cy)
+    digits_cx = barcode_digits[:, 0]
+    digits_cy = barcode_digits[:, 1]
     
-    mean_x = np.mean(digits_cx)
-    mean_y = np.mean(digits_cy)
+    _, _, barcode_width, barcode_height, _, _ = barcode_box
     
-    if var_x > var_y:
+    std_cx = np.std(digits_cx)
+    std_cy = np.std(digits_cy)
+    
+    mean_cx = np.mean(digits_cx)
+    mean_cy = np.mean(digits_cy)
+    
+    if std_cx > std_cy:
         # Barcode is horizontal
-        sorted_indices = barcode_digits[0][:, 0].argsort()
+        sorted_indices = barcode_digits[:, 0].argsort()
 
-        if mean_y < barcode_center_y:
+        if mean_cy < barcode_height:
             # Barcode is upside down
             sorted_indices = sorted_indices[::-1]
-        else:
-            # Barcode is right side up
-            pass # don't do anything
         
     else:
         # Barcode is vertical
-        sorted_indices = barcode_digits[0][:, 1].argsort()
-        if mean_x < barcode_center_x:
+        sorted_indices = barcode_digits[:, 1].argsort()
+        if mean_cx > barcode_width:
             # Barcode is upside down
             sorted_indices = sorted_indices[::-1]
-        else:
-            # Barcode is right side up
-            pass # don't do anything
         
-    sorted_bbox_array = barcode_digits[0][sorted_indices]
+    sorted_bbox_array = barcode_digits[sorted_indices]
     sorted_digit_values = map(int, sorted_bbox_array[:, 5])
     return list(sorted_digit_values)
     
