@@ -1,0 +1,41 @@
+name: CI/CD Pipeline for development
+
+on:
+  push:
+    branches: develop
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+   
+    steps:
+    
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v1
+    
+      - name: Build and Push Docker Image
+        run: |
+          cd scripts/docker-management
+          ./build-image.sh
+          ./push-image.sh
+       
+      # Todo : use ssh key to login
+      # Todo : add unit tests check
+      # Todo : add script git-pull 
+      - name: Pull - Run Docker Image
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.IP_DEVELOP }}
+          username: root
+          password: 9rCe9XETNud9dXvcKMxk
+          script: |
+            docker login --username reda-bouzad --password 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 ghcr.io
+            docker pull ghcr.io/similar-intelligence/$IMAGE_NAME:$IMAGE_TAG
+            ./run-image.sh
+            ./delete-images.sh
+    
+
+
