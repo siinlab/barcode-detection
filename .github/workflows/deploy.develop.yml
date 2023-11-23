@@ -23,10 +23,10 @@ jobs:
           echo $IMAGE_NAME:$IMAGE_TAG
           cd scripts/docker-management
           ./build-image.sh
-
+          
           printf "%s\n" """${{secrets.PRIVATE_KEY}}""" > ./privatekey
           chmod 400 ./privatekey
-          docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} docker load
+          docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} docker load
     
 
 
