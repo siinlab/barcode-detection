@@ -21,7 +21,6 @@ jobs:
     
       - name: Build and Push Docker Image
         run: |
-          cat .env
           cd scripts/docker-management
        
       - name: Copy image to remote server
