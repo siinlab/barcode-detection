@@ -22,8 +22,8 @@ jobs:
           IMAGE_NAME: "ai-engine-barcode"
           IMAGE_TAG: "0.1.0"
           PORT: "9002"
-        envs: IMAGE_NAME, IMAGE_TAG, PORT
         with:
+          envs: IMAGE_NAME, IMAGE_TAG, PORT
           host: ${{ secrets.DEV_IP }}
           username: ${{ secrets.DEV_USER_NAME }}
           key: ${{ secrets.PRIVATE_KEY }}
