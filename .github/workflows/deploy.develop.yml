@@ -12,6 +12,9 @@ jobs:
     
       - name: Checkout Repository
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+          token: ${{ secrets.CI_TOKEN }}
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
@@ -22,9 +25,8 @@ jobs:
           export IMAGE_TAG=$(cat ./VERSION)
           echo $IMAGE_NAME:$IMAGE_TAG
           cd scripts/docker-management
+          ./build-image.sh
           echo "${{secrets.PRIVATE_KEY}}" > ./privatekey
-          cat ./privatekey
-          echo ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }}
           docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} docker load
     
 
