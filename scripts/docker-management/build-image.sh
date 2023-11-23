@@ -8,4 +8,4 @@ IMAGE_NAME=$(cat "$DIR/../../NAME")
 IMAGE_TAG=$(cat "$DIR/../../VERSION")
 
 echo "Building image $IMAGE_NAME:$IMAGE_TAG"
-docker build . -t "ghcr.io/similar-intelligence/$IMAGE_NAME:$IMAGE_TAG"
+docker build . -t "$IMAGE_NAME:$IMAGE_TAG"
