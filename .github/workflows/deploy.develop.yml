@@ -19,7 +19,7 @@ jobs:
       - name: Build and Push Docker Image
         run: |
           echo "${{secrets.PRIVATE_KEY}}" > ./privatekey
-          ssh  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} ls
+          ssh  -o StrictHostKeyChecking=no -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} ls
 
           export IMAGE_NAME="ai-engine-barcode"
           export IMAGE_TAG=$(cat ./VERSION)
