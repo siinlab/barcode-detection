@@ -16,15 +16,6 @@ jobs:
           submodules: 'true'
           token: ${{ secrets.CI_TOKEN }}
 
-      - name: Save Environment Variables
-        run: |
-          touch .env
-          echo IMAGE_NAME="ai-engine-barcode" >> .env
-          echo IMAGE_TAG=$(cat ./VERSION) >> .env
-          cat .env
-          export IMAGE_NAME="ai-engine-barcode"
-          export IMAGE_TAG="$(cat ./VERSION)"
-
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
     
@@ -32,10 +23,13 @@ jobs:
         run: |
           cat .env
           cd scripts/docker-management
-          echo $IMAGE_NAME:$IMAGE_TAG
        
       - name: Copy image to remote server
-        run: docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | pv | ssh ai-engine-develop docker load
+        run: |
+          export IMAGE_NAME="ai-engine-barcode"
+          export IMAGE_TAG=$(cat ./VERSION)
+          echo $IMAGE_NAME:$IMAGE_TAG
+          docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | pv | ssh ai-engine-develop docker load
     
 
 
