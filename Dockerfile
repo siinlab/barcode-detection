@@ -8,6 +8,6 @@ COPY src/ /root/src
 COPY models/ /root/models
 COPY scripts/ /root/scripts
 
-# RUN bash scripts/install.sh
+RUN bash scripts/install.sh
 
 ENTRYPOINT ["bash", "scripts/run.sh"]
