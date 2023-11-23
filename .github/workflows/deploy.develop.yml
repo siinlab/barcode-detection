@@ -21,13 +21,12 @@ jobs:
     
       - name: Build and Push Docker Image
         run: |
-          cd scripts/docker-management
-       
-      - name: Copy image to remote server
-        run: |
           export IMAGE_NAME="ai-engine-barcode"
           export IMAGE_TAG=$(cat ./VERSION)
           echo $IMAGE_NAME:$IMAGE_TAG
+          cd scripts/docker-management
+          ./build-image.sh
+          apt install pv -y
           docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | pv | ssh ai-engine-develop docker load
     
 
