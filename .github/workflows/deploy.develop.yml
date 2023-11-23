@@ -30,8 +30,8 @@ jobs:
     
       - name: Build and Push Docker Image
         run: |
-          cd scripts/docker-management
           cat .env
+          cd scripts/docker-management
           echo $IMAGE_NAME:$IMAGE_TAG
        
       - name: Copy image to remote server
