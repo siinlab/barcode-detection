@@ -27,7 +27,7 @@ def convert_image_to_bytes(image):
 
 def send_request(image_bytes):
     """Send a request to a detection API with an image."""
-    url = "http://localhost:9002/detection/"
+    url = "http://localhost:9001/detection/"
     files = {'file': ('image.jpg', image_bytes)}
     payload = {"token": "1234"}
 
