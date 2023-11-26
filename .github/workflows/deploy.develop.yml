@@ -1,3 +1,6 @@
+# The following secret variables are at organisation-level: CI_TOKEN, HOST_USERNAME, PRIVATE_KEY
+# Only, *_IP is repository-dependent
+
 name: CI/CD Pipeline for development
 
 on:
@@ -33,14 +36,17 @@ jobs:
           echo  $IMAGE_NAME
           echo  $IMAGE_TAG
           echo  $APP_PORT
+
+      - name: Save Private Key
+        run: |
+          printf "%s\n" """${{secrets.PRIVATE_KEY}}""" > ./privatekey
+          chmod 400 ./privatekey
     
       - name: Build and Push Docker Image
         run: |
           docker build . -t ${IMAGE_NAME}:${IMAGE_TAG}
-          printf "%s\n" """${{secrets.PRIVATE_KEY}}""" > ./privatekey
-          chmod 400 ./privatekey
-          docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} docker load
+          docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.HOST_USERNAME }}@${{ secrets.DEV_IP }} docker load
 
       - name: Run Docker Image
         run: |
-          ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} "~/infrastructure-server/scripts/docker-management/run-image.sh $IMAGE_NAME $IMAGE_TAG $APP_PORT"
+          ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.HOST_USERNAME }}@${{ secrets.DEV_IP }} "~/infrastructure-server/scripts/docker-management/run-image.sh $IMAGE_NAME $IMAGE_TAG $APP_PORT"
