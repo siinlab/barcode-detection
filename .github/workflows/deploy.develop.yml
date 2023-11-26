@@ -42,13 +42,5 @@ jobs:
           docker save $IMAGE_NAME:$IMAGE_TAG | bzip2 | ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} docker load
 
       - name: Run Docker Image
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.DEV_IP }}
-          username: ${{ secrets.DEV_USER_NAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          script: |
-            cd ~/infrastructure-server/scripts/docker-management
-            ./run-image.sh $IMAGE_NAME $IMAGE_TAG $APP_PORT
-
-
+        run: |
+          ssh -o StrictHostKeyChecking=no  -i ./privatekey ${{ secrets.DEV_USER_NAME }}@${{ secrets.DEV_IP }} "~/infrastructure-server/scripts/docker-management/run-image.sh $IMAGE_NAME $IMAGE_TAG $APP_PORT"
