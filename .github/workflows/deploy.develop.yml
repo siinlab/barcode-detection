@@ -39,7 +39,7 @@ jobs:
 
       - name: Save Private Key
         run: |
-          printf "%s\n" """${{secrets.PRIVATE_KEY}}""" > ./privatekey
+          printf "%s\n" """${{secrets.SSH_PRIVATE_KEY}}""" > ./privatekey
           chmod 400 ./privatekey
     
       - name: Build and Push Docker Image
