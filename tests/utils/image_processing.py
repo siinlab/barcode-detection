@@ -27,7 +27,7 @@ def convert_image_to_bytes(image):
 
 def send_request(image_bytes):
     """Send a request to a detection API with an image."""
-    url = "http://localhost:9001/detection/"
+    url = "http://localhost:9002/detection/"
     files = {'file': ('image.jpg', image_bytes)}
     payload = {"token": "1234"}
 
@@ -36,28 +36,21 @@ def send_request(image_bytes):
         return None
     return response.json()
 
-def process_detections(api_response, image_path):
+def process_detections(img, class_id, labels, xyxy, confidence):
+    
     """Process detections from the API response."""
-    img = cv2.imread(image_path)
-    xyxy, confidence, detected_barcodes = zip(*[
-        ([det["x1"], det["y1"], det["x2"], det["y2"]], det["score"], int(det["barcode"]) if det["barcode"] else 0)
-        for det in api_response
-    ])
-
+   
     # Converting to numpy arrays
     xyxy = np.array(xyxy)
     confidence = np.array(confidence)
-    class_id = np.array(detected_barcodes)
+    class_id = np.array(class_id)
 
     # Creating a Detections object
     detections = Detections(xyxy=xyxy, confidence=confidence, class_id=class_id)
-
-    # Generating labels
-    labels = [f"{id}  {conf:0.2f}" for conf, id in zip(confidence, class_id)]
-
+   
     # Annotating the image
     img = box_annotator.annotate(scene=img, detections=detections, labels=labels)
-    return detected_barcodes, img
+    return img
 
 def save_misrecognized_image(image, folder, image_name):
     """Save misrecognized images to a specified folder."""

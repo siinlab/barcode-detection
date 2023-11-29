@@ -121,7 +121,7 @@ def crop_object( xyxy, image):
         """
         xmin, ymin, xmax, ymax = map(int, xyxy[:4])
         width, height = xmax - xmin, ymax - ymin
-        width_increase, height_increase = int(width), int(height) # NOTE: this width & height increase play a major role in determining the barcode orientation
+        width_increase, height_increase = int(width*0.2), int(height*0.2) # NOTE: this width & height increase play a major role in determining the barcode orientation
 
         xmin, ymin = max(0, xmin - width_increase // 2), max(0, ymin - height_increase // 2)
         xmax, ymax = min(image.shape[1], xmax + width_increase // 2), min(image.shape[0], ymax + height_increase // 2)
@@ -177,14 +177,14 @@ def sort_barcode_digits(barcode_digits, barcode_box):
         # Barcode is horizontal
         sorted_indices = barcode_digits[:, 0].argsort()
 
-        if mean_cy < barcode_height:
+        if mean_cy < (barcode_height*1.2)/2:
             # Barcode is upside down
             sorted_indices = sorted_indices[::-1]
         
     else:
         # Barcode is vertical
         sorted_indices = barcode_digits[:, 1].argsort()
-        if mean_cx > barcode_width:
+        if mean_cx > (barcode_width*1.2)/2:
             # Barcode is upside down
             sorted_indices = sorted_indices[::-1]
         
