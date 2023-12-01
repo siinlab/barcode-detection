@@ -4,6 +4,10 @@
 ## Requirements
 
 ## Getting started
+This demo is self-contained and can be built and run on any machine with Docker installed.   
+Simply run: `bash scripts/build-image.sh` to build the Docker image.  
+Then run: `bash scripts/run.sh` to start the container.
+
 There are shell scripts in [scripts/](scripts) directory:
 - [install.sh](scripts%2Finstall.sh): This should contain all the commands to **install** the project.
 - [run.sh](scripts%2Frun.sh): This should contain all the commands to **run** the project.
