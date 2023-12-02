@@ -10,4 +10,4 @@ apt-get update -y
 apt-get install ffmpeg libsm6 libxext6  -y
 
 cd "$DIR/.."
-pip install -r requirements.txt
+pip install -r requirements.txt --no-cache-dir
