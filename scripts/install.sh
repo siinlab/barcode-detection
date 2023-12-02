@@ -11,4 +11,4 @@ apt-get install ffmpeg libsm6 libxext6  -y
 
 cd "$DIR/.."
 export TMPDIR=$HOME/tmp
-pip install -r requirements.txt --no-cache-dir
+pip --cache-dir /home/tmp install -r requirements.txt 
