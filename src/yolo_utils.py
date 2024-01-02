@@ -11,12 +11,8 @@ import cv2
 
 from config import BARCODE_PATH, BARCODE_DECODER_PATH, BarcodeOutput
 from utils import save_uploaded_image, crop_object, determine_barcode_orientation
-# from engine_utils import validate_api_key
+from engine_utils import validate_api_key, ApiKeyException
 
-def validate_token(token: str):
-    if not 1==1:
-        logger.error(f"Token `{token}` is invalid")
-        raise HTTPException(status_code=498, detail="Invalid token")
 
 def handle_json_response(bboxes: List[np.array], label_names: List[str]) -> dict:
     """Process bounding boxes and label names to create a JSON response."""
@@ -36,9 +32,10 @@ def handle_json_response(bboxes: List[np.array], label_names: List[str]) -> dict
 
 def process_detection_request(token: str = Form(...), file: UploadFile = File(...)):
     """Process a detection request."""
-    logger.info(f"Detecting in {file.filename}...")
+    if not validate_api_key(token):
+        raise ApiKeyException("Invalid API key")
 
-    validate_token(token)
+    logger.info(f"Detecting in {file.filename}...")
 
     try:
         image = save_uploaded_image(file)

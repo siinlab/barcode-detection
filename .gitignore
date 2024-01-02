@@ -3,7 +3,9 @@ image.jpg
 .idea
 logs
 .DS_Store
-uploads/*
+*.jpg
+*.jpeg
+*.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
