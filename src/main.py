@@ -36,7 +36,7 @@ async def upload(token: str = Form(...), file: UploadFile = File(...)):
         if not validate_api_key(token):
             raise ApiKeyException("Invalid API key")
         
-        result = process_detection_request(token=token, file=file)
+        result = process_detection_request(file=file)
         return result
     except ApiKeyException as e:
         raise HTTPException(detail=str(e), status_code=401)
