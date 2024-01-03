@@ -4,14 +4,14 @@ from typing import List
 from yolo_utils import process_detection_request
 from config import BarcodeOutput, Status
 
-from engine_utils import load_api_keys, api_key_router, ApiKeyException
+from engine_utils import load_api_keys, api_key_router, ApiKeyException, validate_api_key
 
 from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    load_api_keys('string')
+    load_api_keys('barcode')
         
     yield # this is where the rest of the app would go
     
@@ -33,6 +33,9 @@ async def upload(token: str = Form(...), file: UploadFile = File(...)):
     """ Formatted as (x1, y1, x2, y2, score, barcode string)
     """
     try:
+        if not validate_api_key(token):
+            raise ApiKeyException("Invalid API key")
+        
         result = process_detection_request(token=token, file=file)
         return result
     except ApiKeyException as e:
