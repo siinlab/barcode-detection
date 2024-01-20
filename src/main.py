@@ -28,7 +28,7 @@ async def check_status():
     """
     return Status(status='ok')    
 
-@app.post("/detection/", response_model=List[BarcodeOutput])
+@app.post("/v1/detection", response_model=List[BarcodeOutput])
 async def upload(token: str = Form(...), file: UploadFile = File(...)):
     """ Formatted as (x1, y1, x2, y2, score, barcode string)
     """
