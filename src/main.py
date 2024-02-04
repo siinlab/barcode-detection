@@ -1,10 +1,14 @@
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from typing import List
 
+from fastapi.responses import HTMLResponse
+
 from yolo_utils import process_detection_request
 from config import BarcodeOutput, Status
 
-from engine_utils import load_api_keys, api_key_router, ApiKeyException, validate_api_key
+from engine_utils import load_api_keys, api_key_router, ApiKeyException, validate_api_key, html_documentation
+
+from os.path import join, abspath, dirname
 
 from contextlib import asynccontextmanager
 
@@ -20,6 +24,11 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_key_router)
 
+@app.get('/')
+async def get_documentation():
+    html = html_documentation(join(abspath(dirname(__file__)), '..', 'Documentation.md'))
+    return HTMLResponse(content=html)
+
 @app.get("/status", response_model=Status)
 async def check_status():
     """ Check the status of the server.
@@ -28,7 +37,7 @@ async def check_status():
     """
     return Status(status='ok')    
 
-@app.post("/detection/", response_model=List[BarcodeOutput])
+@app.post("/v1/detection", response_model=List[BarcodeOutput])
 async def upload(token: str = Form(...), file: UploadFile = File(...)):
     """ Formatted as (x1, y1, x2, y2, score, barcode string)
     """
