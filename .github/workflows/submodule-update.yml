@@ -19,8 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PARENT_REPOSITORY: 'Similar-Intelligence/ai-engine-shared-library'
-      CHECKOUT_BRANCH: 'main'
-      PR_AGAINST_BRANCH: 'develop'
+      CHECKOUT_BRANCH: 'develop'
+      PR_AGAINST_BRANCH: 'main'
       OWNER: 'Similar-Intelligence'
 
     steps:
