@@ -20,7 +20,7 @@ jobs:
     env:
       PARENT_REPOSITORY: 'Similar-Intelligence/ai-engine-shared-library'
       CHECKOUT_BRANCH: 'main'
-      PR_AGAINST_BRANCH: 'develop'
+      PR_AGAINST_BRANCH: 'main'
       OWNER: 'Similar-Intelligence'
 
     steps:
