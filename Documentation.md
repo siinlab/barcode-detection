@@ -12,7 +12,7 @@ To access the software, an API Key is mandatory to authorization. Obtain your ke
 
 Once you have your API Key, the following Python code demonstrates how to use the Barcode Reader API on this image:
 
-<img src="https://s3.eu-central-1.wasabisys.com/siin-public-resources/images/can-barcode.jpeg?AWSAccessKeyId=F0MHNO4PYNCP2KGREV7W&Expires=1709973459&Signature=IpATLtn47wCcVJSkcSjYrIkPCow%3D" height="300px">
+<img src="https://siin.b-cdn.net/images/barcode.jpeg" height="300px">
 
 ```python
 from os import getenv

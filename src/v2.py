@@ -42,7 +42,7 @@ from PIL import Image
 import numpy as np
 import requests
 
-image_url = 'https://i.ibb.co/jg4KQhN/1.jpg'
+image_url = 'https://siin.b-cdn.net/images/barcode.jpeg'
 api_url = "https://ai.siinlab.com/barcode/v2/detection/"
 image_path = 'image.png'
 api_key = getenv('SIIN_API_KEY') # export SIIN_API_KEY=xxxxx

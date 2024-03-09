@@ -44,7 +44,7 @@ from os import getenv
 from PIL import Image
 import requests
 import json
-image_url = 'https://i.ibb.co/jg4KQhN/1.jpg'
+image_url = 'https://siin.b-cdn.net/images/barcode.jpeg'
 api_url = "http://ai.siinlab.com/barcode/v1/detection/"
 image_path = 'image.png'
 api_key = getenv('SIIN_API_KEY') # export SIIN_API_KEY=xxxxx
