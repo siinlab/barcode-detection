@@ -6,12 +6,18 @@ from fastapi.responses import HTMLResponse
 from yolo_utils import process_detection_request
 from config import BarcodeOutput, Status
 
-from engine_utils import load_api_keys, api_key_router, ApiKeyException, validate_api_key, html_documentation
+from engine_utils import load_api_keys, api_key_router, ApiKeyException, html_documentation
+from engine_utils.requests import api_key_is_valid
+from engine_utils.dependencies import validate_api_key, get_pil_image
+
 
 from os.path import join, abspath, dirname
 
 from contextlib import asynccontextmanager
 
+
+from v1 import router as v1_router
+from v2 import router as v2_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,10 +29,15 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(api_key_router)
+app.include_router(v1_router)
+app.include_router(v2_router)
 
 @app.get('/')
 async def get_documentation():
-    html = html_documentation(join(abspath(dirname(__file__)), '..', 'Documentation.md'))
+    path = join(abspath(dirname(__file__)), '..')
+    html = html_documentation(join(path, 'Documentation.md'),
+                              join(path, 'VERSION'),
+                              join(path, 'CHANGELOG.md'))
     return HTMLResponse(content=html)
 
 @app.get("/status", response_model=Status)
@@ -35,20 +46,5 @@ async def check_status():
     Returns:
         str: A message indicating if the server is running.
     """
-    return Status(status='ok')    
+    return Status(status='ok')
 
-@app.post("/v1/detection", response_model=List[BarcodeOutput])
-async def upload(token: str = Form(...), file: UploadFile = File(...)):
-    """ Formatted as (x1, y1, x2, y2, score, barcode string)
-    """
-    try:
-        if not validate_api_key(token):
-            raise ApiKeyException("Invalid API key")
-        
-        result = process_detection_request(file=file)
-        return result
-    except ApiKeyException as e:
-        raise HTTPException(detail=str(e), status_code=401)
-    except Exception as e:
-        # Handle exceptions appropriately
-        raise HTTPException(detail="An error occurred during processing.", status_code=500)
