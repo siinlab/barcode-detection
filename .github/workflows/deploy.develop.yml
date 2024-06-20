@@ -20,6 +20,8 @@ jobs:
 
   build_and_deploy:
     uses: siinlab/infrastructure-server/.github/workflows/deployment.yml@develop
+    with:
+      runner: runner-name
     secrets: 
      IP: ${{secrets.DEV_IP}}
      HOST_USERNAME: ${{secrets.HOST_USERNAME}}
