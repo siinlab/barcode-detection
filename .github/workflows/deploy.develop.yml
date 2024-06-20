@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-and-deploy:
-    uses: similar-Intelligence/infrastructure-server/.github/workflows/deployment.yml@develop
+    uses: siinlab/infrastructure-server/.github/workflows/deployment.yml@develop
     with:
       runner: runner-name
     secrets:
