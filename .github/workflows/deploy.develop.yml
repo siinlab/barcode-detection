@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.CI_TOKEN }}
 
   build_and_deploy:
-    uses: similar-Intelligence/infrastructure-server/.github/workflows/deployment.yml@develop
+    uses: siinlab/infrastructure-server/.github/workflows/deployment.yml@develop
     secrets: 
      IP: ${{secrets.DEV_IP}}
      HOST_USERNAME: ${{secrets.HOST_USERNAME}}
