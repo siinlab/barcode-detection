@@ -27,11 +27,10 @@ def convert_image_to_bytes(image):
 
 def send_request(image_bytes):
     """Send a request to a detection API with an image."""
-    url = "http://localhost:9002/detection/"
+    url = "http://localhost:9002/v1/detection/"
     files = {'file': ('image.jpg', image_bytes)}
-    payload = {"token": "1234"}
 
-    response = requests.post(url=url, files=files, data=payload)
+    response = requests.post(url=url, files=files)
     if response.status_code != 200:
         return None
     return response.json()
