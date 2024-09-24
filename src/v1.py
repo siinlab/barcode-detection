@@ -6,15 +6,6 @@ from fastapi.responses import HTMLResponse
 from yolo_utils import process_detection_request
 from config import BarcodeOutput, Status
 
-from engine_utils import load_api_keys, api_key_router, ApiKeyException, html_documentation
-from engine_utils.requests import api_key_is_valid
-from engine_utils.dependencies import validate_api_key, get_pil_image
-
-
-from os.path import join, abspath, dirname
-
-from contextlib import asynccontextmanager
-
 from fastapi import APIRouter
 from fastapi.responses import PlainTextResponse
 
@@ -22,17 +13,12 @@ router = APIRouter(prefix='/v1')
 
 
 @router.post("/detection/", response_model=List[BarcodeOutput])
-async def upload(token: str = Form(...), file: UploadFile = File(...)):
+async def upload(file: UploadFile = File(...)):
     """ Formatted as (x1, y1, x2, y2, score, barcode string)
     """
     try:
-        if not api_key_is_valid(token):
-            raise ApiKeyException("Invalid API key")
-        
         result = process_detection_request(file=file)
         return result
-    except ApiKeyException as e:
-        raise HTTPException(detail=str(e), status_code=401)
     except Exception as e:
         # Handle exceptions appropriately
         raise HTTPException(detail="An error occurred during processing.", status_code=500)

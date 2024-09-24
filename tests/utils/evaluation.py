@@ -14,8 +14,6 @@ def accuracy_score(true_labels, predicted_labels):
     correct_predictions = sum(truth == prediction for truth, prediction in zip(true_labels, predicted_labels))
     return correct_predictions / len(true_labels)
 
-
-
 def evaluate_model(images_folder, labels_folder, misrecognized_folder):
     """Evaluate model accuracy on a set of images and labels."""
     predictions, ground_truths = [], []
@@ -40,6 +38,7 @@ def evaluate_model(images_folder, labels_folder, misrecognized_folder):
                 respond = True 
             else:
                 detected_barcodes  = []
+                confidence = []
 
             is_match = set(detected_barcodes) == actual_barcodes
             label = []
