@@ -9,3 +9,6 @@ setuptools==57.4.0
 supervision==0.16.0
 ultralytics==8.0.153
 tqdm
+streamlit 
+torch 
+torchvision 
