@@ -1,6 +1,6 @@
-# Barcode Detection and Recognition System
+# Barcode Detection and Recognition System.
 
-This project is designed for Barcode Detection and Recognition. It leverages YOLO models for detecting barcodes, a decoder for recognizing barcode information, and integrates with Streamlit for a user-friendly web interface.
+##### This project is designed for Barcode Detection and Recognition. It leverages YOLO models for detecting barcodes, a decoder for recognizing barcode information, and integrates with Streamlit for a user-friendly web interface
 ---
 ## 🎥 Video Demo
 https://github.com/user-attachments/assets/008efa1a-a3ff-4f7e-b8d0-92da2650014d
