@@ -95,18 +95,27 @@ http://localhost:8501
 - **Barcode Recognition**: Recognizes and decodes the barcode information from detected barcodes.
 - **End-to-End Flow**: Processes an image to detect barcodes and decode the information.
 
-## ⚙️ Configuration
-### YOLO Models:
-- **Barcode Detection Model 1**: `models/barcode_detector/detector_model1.pt`
-- **Barcode Detection Model 2**: `models/barcode_detector/detector_model2.pt`
-- **Barcode Recognition Model**: `models/barcode_decoder/decoder_model.pt`
+## 🛠️ Training Models
 
-## 🛠️ Tech Stack
-- **Python 3.9+**: Programming language for backend development.
-- **Streamlit**: Web-based UI framework for creating the application interface.
-- **YOLO (Ultralytics)**: Object detection models used for detecting barcodes.
-- **Pillow**: Image processing library for handling and manipulating images.
-- **Docker**: Containerization platform to package the application for deployment.
+To train the barcode detection and recognition models, the training datasets should be prepared in the `data/training_data` directory. For more details on how to prepare the datasets, refer to the [README](data/training_data/README.md).
+
+### 1. Training Barcode Detection Model
+
+To train the detection model, you can use the `train.py` script. Run the following commands:
+
+```bash
+cd data/training_data/barcode-detection/
+python ../../../src/train.py --data ./data.yaml --model ../../../models/barcode-detection/model.yaml --epochs 120 --batch 8 --imgsz 640
+```
+
+### 2. Training Barcode Recognition Model
+
+You can train the recognition model using the `train.py` script, by running the following commands:
+
+```bash
+cd data/training_data/barcode-recognition/
+python ../../../src/train.py --data ./data.yaml --model ../../../models/barcode-recognition/model.yaml --epochs 120 --batch 8 --imgsz 128
+```
 
 ## 📄 License
 This project is licensed under the MIT License.
@@ -118,10 +127,5 @@ This project is licensed under the MIT License.
 - Push the branch (git push origin feature-branch).
 - Open a Pull Request.
 
-
-
 ## 📞 Contact
-If you have any questions or issues, feel free to reach out at:
-
-Email: contact@siinlab.com
-
+If you have any questions or issues, feel free to open a Github issue or reach out at [contact@siinlab.com](mailto:contact@siinlab.com).

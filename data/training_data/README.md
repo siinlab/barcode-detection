@@ -16,3 +16,10 @@ To unzip the downloaded datasets, use the following command:
 unzip barcode-detection.zip
 unzip barcode-recognition.zip
 ```
+
+Optionally, delete the zip files to save space:
+
+```bash
+rm barcode-detection.zip
+rm barcode-recognition.zip
+```
