@@ -105,7 +105,7 @@ To train the detection model, you can use the `train.py` script. Run the followi
 
 ```bash
 cd data/training_data/barcode-detection/
-python ../../../src/train.py --data ./data.yaml --model ../../../models/barcode-detection/model.yaml --epochs 120 --batch 8 --imgsz 640
+python ../../../src/train.py --data ./data.yaml --model ../../../models/barcode-detection/model.yaml --epochs 30 --batch 8 --imgsz 640
 ```
 
 ### 2. Training Barcode Recognition Model
