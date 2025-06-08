@@ -100,8 +100,6 @@ http://localhost:8501
 - **Barcode Detection Model 1**: `models/barcode_detector/detector_model1.pt`
 - **Barcode Detection Model 2**: `models/barcode_detector/detector_model2.pt`
 - **Barcode Recognition Model**: `models/barcode_decoder/decoder_model.pt`
-### Data Configuration:
-- `data/barcode_detection_data/data.yaml`: Data configuration for training and testing.
 
 ## 🛠️ Tech Stack
 - **Python 3.9+**: Programming language for backend development.
