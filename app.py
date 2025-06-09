@@ -10,8 +10,8 @@ st.title("YOLO Barcode Detection and Decoding App")
 model_choice = st.selectbox("Select Model Type", ("Detector Model", "End-to-End Model"))
 
 # Load YOLO models
-barcode_detector_model = load_yolo_model("detector model 1")
-barcode_decoder_model = load_yolo_model("decoder model ")
+barcode_detector_model = load_yolo_model("detector model")
+barcode_decoder_model = load_yolo_model("decoder model")
 
 # File uploader for images
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])

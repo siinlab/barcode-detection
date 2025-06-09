@@ -3,20 +3,22 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 from PIL import Image
+from lgg import logger
+
+logger.setLevel("DEBUG")
 
 def load_yolo_model(model_choice: str) -> YOLO:
     """Load the YOLO model based on user's selection."""
-    if model_choice == "detector model 1":
-        model_path = "models/barcode_detector/detector_model1.pt"
-    elif model_choice == "detector model 2":
-        model_path = "models/barcode_detector/detector_model2.pt"
+    if model_choice == "detector model":
+        model_path = "models/barcode-detection/model.pt"
     else:
-        model_path = "models/barcode_decoder/decoder_model.pt"
+        model_path = "models/barcode-recognition/model.pt"
 
     return YOLO(model_path)
 
 def draw_bounding_boxes(results, image_np: np.ndarray) -> np.ndarray:
     """Draw bounding boxes on the image using YOLO detection results."""
+    image_np = image_np.copy()  # Create a copy to avoid modifying the original image
     for result in results:
         for box in result.boxes:
             x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
@@ -24,25 +26,17 @@ def draw_bounding_boxes(results, image_np: np.ndarray) -> np.ndarray:
             class_id = int(box.cls[0])
 
             color = (0, 255, 0)  # Green for barcode
-            thickness = 1
+            # Set thickness based on box width (min 1, max 4)
+            box_width = x2 - x1
+            thickness = max(1, min(4, box_width // 100))
             cv2.rectangle(image_np, (x1, y1), (x2, y2), color, thickness)
-            label = f"Class {class_id}: {confidence:.2f}"
-            cv2.putText(image_np, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
-
-    return image_np
-
-def rotate_image_if_needed(image_np, bounding_box):
-    """Rotate the image if the barcode is detected in an unusual orientation."""
-    x1, y1, x2, y2 = map(int, bounding_box[:4])
-    width = x2 - x1
-    height = y2 - y1
-
-    # Rotate 90 degrees if width < height (barcode is vertical)
-    if width < height:
-        image_np = cv2.rotate(image_np, cv2.ROTATE_90_CLOCKWISE)
-    # Rotate 180 degrees if the barcode might be upside down
-    elif y2 < y1:
-        image_np = cv2.rotate(image_np, cv2.ROTATE_180)
+            # label = f"{class_id}: {confidence:.2f}"
+            label = f"{class_id}"
+            # Set font thickness based on box width (min 1, max 3)
+            font_thickness = max(1, min(3, box_width // 150))
+            # Set font scale based on box height (min 0.3, max 1.0)
+            font_scale = max(0.4, min(1.0, box_width / 200 if box_width > box_width else box_width / 200))
+            cv2.putText(image_np, label, (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 100, 255), font_thickness)
 
     return image_np
 
@@ -82,7 +76,6 @@ def sort_barcode_digits(barcode_digits, barcode_box):
         list: Sorted barcode digits.
     """
     # Convert barcode box to center format
-    barcode_box = convert_xyxy_to_xywh(barcode_box)
     converted_digits = [convert_xyxy_to_xywh(digit) for digit in barcode_digits]
     
     # Extract center coordinates
@@ -114,17 +107,34 @@ def decode_barcodes(detection_results, image_np, barcode_decoder_model):
     for result in detection_results:
         for box in result.boxes:
             bounding_box = convert_xyxy_to_xywh(box)
-            
-            # Rotate the image if needed
-            image_np = rotate_image_if_needed(image_np, bounding_box)
 
-            # Crop each barcode area
-            x1, y1, x2, y2 = int(bounding_box[0] - bounding_box[2] // 2), int(bounding_box[1] - bounding_box[3] // 2), int(bounding_box[0] + bounding_box[2] // 2), int(bounding_box[1] + bounding_box[3] // 2)
+            # Add 10% padding to each side
+            pad_w = int(bounding_box[2] * 0.1)
+            pad_h = int(bounding_box[3] * 0.1)
+            x1 = int(bounding_box[0] - bounding_box[2] // 2 - pad_w)
+            y1 = int(bounding_box[1] - bounding_box[3] // 2 - pad_h)
+            x2 = int(bounding_box[0] + bounding_box[2] // 2 + pad_w)
+            y2 = int(bounding_box[1] + bounding_box[3] // 2 + pad_h)
+            # Ensure coordinates are within image bounds
+            x1 = max(x1, 0)
+            y1 = max(y1, 0)
+            x2 = min(x2, image_np.shape[1])
+            y2 = min(y2, image_np.shape[0])
+            # Crop the barcode region from the image
             cropped_barcode = image_np[y1:y2, x1:x2]
 
-            # Run the decoder model on the cropped barcode
-            decoding_results = barcode_decoder_model(cropped_barcode)
+            # save cropped barcode for debugging
+            cropped_barcode_pil = Image.fromarray(cropped_barcode)
+            cropped_barcode_pil.save("debug_cropped_barcode.png")
 
+            # Run the decoder model on the cropped barcode
+            decoding_results = barcode_decoder_model(cropped_barcode, nms=True, conf=0.5, iou=0.2)
+            
+            # Save the cropped barcode image with detections for debugging
+            debug_cropped_barcode_with_detections = draw_bounding_boxes(decoding_results, cropped_barcode)
+            debug_cropped_barcode_with_detections = Image.fromarray(debug_cropped_barcode_with_detections)
+            debug_cropped_barcode_with_detections.save("debug_cropped_barcode_with_detections.png")
+            
             # Collect detected digits as bounding boxes
             detected_info = [
                 [int(digit_box.xyxy[0][0].item()), int(digit_box.xyxy[0][1].item()), int(digit_box.xyxy[0][2].item()), int(digit_box.xyxy[0][3].item()), 

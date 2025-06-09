@@ -5,46 +5,6 @@
 ## 🎥 Video Demo
 https://github.com/user-attachments/assets/008efa1a-a3ff-4f7e-b8d0-92da2650014d
 
-## 📑 Project Structure
-
-```bash
-BARCODE-DETECTION/
-│
-├── data/
-│   ├── barcode_detection_data/   # Training data for barcode detection
-│   │   ├── images/               # Contains images used for training/testing
-│   │   ├── labels/               # Contains corresponding labels for the images
-│   │   ├── data.yaml             # Data configuration file
-│   │   ├── test.txt              # Test dataset paths
-│   │   ├── train.txt             # Training dataset paths
-│   │   └── val.txt               # Validation dataset paths
-│   └── barcode_recognition_data/ # Data used for barcode recognition
-│   │   ├── images/               # Contains images used for training/testing
-│   │   ├── labels/               # Contains corresponding labels for the images
-│   │   ├── data.yaml             # Data configuration file
-│   │   ├── test.txt              # Test dataset paths
-│   │   ├── train.txt             # Training dataset paths
-│   │   └── val.txt               # Validation dataset paths
-│
-├── models/                       
-│   ├── barcode_decoder/          # Model for barcode recognition (decoder)
-│   │   └── decoder_model.pt      # Trained model for decoding barcode data
-│   ├── barcode_detector/         # Models for barcode detection
-│   │   ├── detector_model1.pt    # Barcode detection model 1
-│   │   └── detector_model2.pt    # Barcode detection model 2
-│
-├── src/                          # Source code for core functions and utilities
-│   ├── inference.py              # Code for inference and model predictions
-│   ├── train.py                  # Code for training the models
-│   └── utils.py                  # Utility functions
-│
-├── .gitignore                    # Files and directories to ignore in Git
-├── Dockerfile                    # Docker configuration file
-├── app.py                        # Streamlit app for the barcode detection and recognition system
-├── README.md                     # Project documentation (this file)
-└── requirements.txt              # Python dependencies
-
-```
 ## 🚀 How to Run the Application
 
 ### 1. Clone the Repository
@@ -52,7 +12,7 @@ Open a terminal and run the following command:
 
 ```bash
 git clone  https://github.com/siinlab/barcode-detection.git
-cd BARCODE-DETECTION
+cd barcode-detection
 ```
 ### 2. Install Dependencies
 Make sure you have `Python 3.9+` installed. Install the required dependencies:
